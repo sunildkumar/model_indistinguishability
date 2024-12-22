@@ -11,6 +11,7 @@ if __name__ == "__main__":
     model = ViTForImageClassification.from_pretrained(
         pretrained_model_name_or_path="aaraki/vit-base-patch16-224-in21k-finetuned-cifar10"
     )
+    model.to("cuda")
 
     # Load the feature extractor
     feature_extractor = ViTFeatureExtractor.from_pretrained(
@@ -28,7 +29,7 @@ if __name__ == "__main__":
 
     dataset = CIFAR10Testset(transform=transform)
 
-    batch_size = 512
+    batch_size = 64
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
 
     predicted_labels = []
@@ -37,12 +38,19 @@ if __name__ == "__main__":
     for batch in tqdm(dataloader, desc="Evaluating model"):
         images, labels, filenames = batch
 
-        inputs = feature_extractor(images=images, return_tensors="pt")
+        inputs = feature_extractor(
+            images=images,
+            return_tensors="pt",
+        )
+        inputs = {k: v.to("cuda") for k, v in inputs.items()}
+
         outputs = model(**inputs)
         predicted_classes = torch.argmax(outputs.logits, dim=1)
 
         predicted_labels.extend(predicted_classes.tolist())
         true_labels.extend(labels.tolist())
 
-    accuracy = sum(predicted_labels == true_labels) / len(true_labels)
-    print(f"Accuracy: {accuracy:.2f}")
+    accuracy = sum(p == t for p, t in zip(predicted_labels, true_labels)) / len(
+        true_labels
+    )
+    print(f"Accuracy: {accuracy}")
