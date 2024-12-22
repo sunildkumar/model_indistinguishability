@@ -1,10 +1,8 @@
 import os
 
 import cupy as cp
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
 from sklearn_extra.cluster import KMedoids
 from tqdm import tqdm
 
@@ -62,7 +60,9 @@ def cluster_with_kmedoids(dist_matrix, n_clusters=2):
     Cluster the data using K-Medoids with the precomputed distance matrix.
     """
     print("Clustering with K-Medoids...")
-    kmedoids = KMedoids(n_clusters=n_clusters, metric="precomputed", random_state=42)
+    kmedoids = KMedoids(
+        n_clusters=n_clusters, metric="precomputed", random_state=42, init="k-medoids++"
+    )
     cluster_labels = kmedoids.fit_predict(dist_matrix)
 
     print(f"Cluster centers (medoid indices): {kmedoids.medoid_indices_}")
@@ -71,32 +71,41 @@ def cluster_with_kmedoids(dist_matrix, n_clusters=2):
     return cluster_labels, kmedoids
 
 
-def visualize_distance_matrix(
-    dist_matrix, filename="distance_matrix.png", fraction=0.1
+def save_clustered_dataframe(
+    vectors,
+    cluster_labels,
+    original_file="model_eval_results.csv",
+    output_file="model_eval_results_with_clusters.csv",
 ):
     """
-    Visualize a fraction of the distance matrix as a heatmap.
+    Save the original dataframe with an additional column for cluster labels.
     """
-    # Determine the number of samples based on the fraction
-    sample_size = int(dist_matrix.shape[0] * fraction)
+    # Load the original dataframe
+    df = pd.read_csv(original_file)
 
-    # Ensure at least one sample is selected
-    sample_size = max(1, sample_size)
+    # Add the cluster labels to the dataframe
+    df["Cluster Label"] = cluster_labels
 
-    # Randomly select indices for the sample
-    indices = np.random.choice(dist_matrix.shape[0], sample_size, replace=False)
-    sampled_matrix = dist_matrix[np.ix_(indices, indices)]
+    # Save the new dataframe with cluster labels
+    df.to_csv(output_file, index=False)
+    print(f"Dataframe with cluster labels saved to {output_file}")
 
-    print(f"Sampled matrix shape: {sampled_matrix.shape}")
 
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(sampled_matrix, cmap="viridis", cbar=True)
-    plt.title("Distance Matrix Heatmap (Sampled)")
-    plt.xlabel("Data Point Index")
-    plt.ylabel("Data Point Index")
-    plt.savefig(filename)
-    plt.close()
-    print(f"Distance matrix heatmap saved to {filename}")
+def analyze_cluster_composition(clustered_file="model_eval_results_with_clusters.csv"):
+    """
+    Analyze the composition of true labels in each cluster.
+    """
+    # Load the dataframe with cluster labels
+    df = pd.read_csv(clustered_file)
+
+    # Group by cluster and count the occurrences of each true label
+    cluster_composition = df.groupby("Cluster Label")["True label"].value_counts()
+
+    # Print the composition of each cluster
+    for cluster, composition in cluster_composition.groupby(level=0):
+        print(f"Cluster {cluster}:")
+        print(composition)
+        print()
 
 
 def main():
@@ -106,13 +115,16 @@ def main():
     dist_matrix = multiclass_chebyshev_distance(vectors)
     print("distance matrix loaded")
 
-    # Visualize the distance matrix
-    visualize_distance_matrix(dist_matrix)
-
     # Cluster the data using K-Medoids
-    cluster_labels, kmedoids = cluster_with_kmedoids(dist_matrix, n_clusters=4)
+    cluster_labels, kmedoids = cluster_with_kmedoids(dist_matrix, n_clusters=10)
     print("Clustering completed")
     print(f"Number of examples in each cluster: {np.bincount(cluster_labels)}")
+
+    # Save the clustered dataframe
+    save_clustered_dataframe(vectors, cluster_labels)
+
+    # Analyze the composition of true labels in each cluster
+    analyze_cluster_composition()
 
 
 if __name__ == "__main__":
