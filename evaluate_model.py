@@ -1,51 +1,28 @@
-import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
-from transformers import ViTFeatureExtractor, ViTForImageClassification
 
 from dataset import CIFAR10Testset
+from model_zoo.conv_next import ConvNextModel
+from model_zoo.swin import SwinModel
+from model_zoo.vit import ViTModel
+from model_zoo.vit16_lora import ViT16LoraModel
 
-if __name__ == "__main__":
-    # Load the model
-    model = ViTForImageClassification.from_pretrained(
-        pretrained_model_name_or_path="aaraki/vit-base-patch16-224-in21k-finetuned-cifar10"
-    )
-    model.to("cuda")
 
-    # Load the feature extractor
-    feature_extractor = ViTFeatureExtractor.from_pretrained(
-        pretrained_model_name_or_path="google/vit-base-patch16-224-in21k",
-        force_download=True,
-        do_rescale=False,
-    )
+def evaluate_model(model):
+    model.load_model()
 
-    transform = transforms.Compose(
-        [
-            # transforms.Resize((224, 224)),  # Resize images to 224x224
-            transforms.ToTensor(),
-        ]
-    )
+    transform = transforms.ToTensor()
 
     dataset = CIFAR10Testset(transform=transform)
-
-    batch_size = 64
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
+    dataloader = DataLoader(dataset, batch_size=model.batch_size, shuffle=False)
 
     predicted_labels = []
     true_labels = []
 
     for batch in tqdm(dataloader, desc="Evaluating model"):
         images, labels, filenames = batch
-
-        inputs = feature_extractor(
-            images=images,
-            return_tensors="pt",
-        )
-        inputs = {k: v.to("cuda") for k, v in inputs.items()}
-
-        outputs = model(**inputs)
-        predicted_classes = torch.argmax(outputs.logits, dim=1)
+        predicted_classes = model.predict(images)
 
         predicted_labels.extend(predicted_classes.tolist())
         true_labels.extend(labels.tolist())
@@ -53,4 +30,20 @@ if __name__ == "__main__":
     accuracy = sum(p == t for p, t in zip(predicted_labels, true_labels)) / len(
         true_labels
     )
-    print(f"Accuracy: {accuracy}")
+    print(f"Model: {model} Accuracy: {accuracy}")
+
+    model.teardown_model()
+
+
+if __name__ == "__main__":
+    vit_model = ViTModel()
+    # evaluate_model(vit_model)
+
+    convnext_model = ConvNextModel()
+    # evaluate_model(convnext_model)
+
+    swin_model = SwinModel()
+    # evaluate_model(swin_model)
+
+    vit16_lora_model = ViT16LoraModel()
+    # evaluate_model(vit16_lora_model)
