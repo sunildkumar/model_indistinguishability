@@ -173,3 +173,5 @@ cython_debug/
 
 # repo specific things to ignore
 data/
+dist_matrix_chebyshev.npy
+dist_matrix_chebyshev.npy
