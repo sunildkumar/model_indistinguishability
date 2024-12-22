@@ -8,4 +8,5 @@ dependencies = [
     "ipdb>=0.13.13",
     "torchvision>=0.20.1",
     "tqdm>=4.67.1",
+    "transformers>=4.47.1",
 ]
