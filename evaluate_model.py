@@ -1,15 +1,18 @@
+from collections import Counter
+
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from tqdm import tqdm
 
 from dataset import CIFAR10Testset
+from model_zoo.contrastive_model import ContrastiveLearningModel
 from model_zoo.conv_next import ConvNextModel
 from model_zoo.swin import SwinModel
 from model_zoo.vit import ViTModel
 from model_zoo.vit16_lora import ViT16LoraModel
 
 
-def evaluate_model(model):
+def evaluate_model(model, batches_to_eval=None):
     model.load_model()
 
     transform = transforms.ToTensor()
@@ -20,10 +23,11 @@ def evaluate_model(model):
     predicted_labels = []
     true_labels = []
 
-    for batch in tqdm(dataloader, desc="Evaluating model"):
+    for i, batch in enumerate(tqdm(dataloader, desc="Evaluating model")):
+        if batches_to_eval is not None and i >= batches_to_eval:
+            break
         images, labels, filenames = batch
         predicted_classes = model.predict(images)
-
         predicted_labels.extend(predicted_classes.tolist())
         true_labels.extend(labels.tolist())
 
@@ -32,10 +36,16 @@ def evaluate_model(model):
     )
     print(f"Model: {model} Accuracy: {accuracy}")
 
+    # Print the distribution of the predicted labels
+    label_distribution = Counter(predicted_labels)
+    print("Predicted label distribution:", label_distribution)
+
     model.teardown_model()
 
 
 if __name__ == "__main__":
+    print("evaluating models")
+
     vit_model = ViTModel()
     # evaluate_model(vit_model)
 
@@ -47,3 +57,6 @@ if __name__ == "__main__":
 
     vit16_lora_model = ViT16LoraModel()
     # evaluate_model(vit16_lora_model)
+
+    contrastive_model = ContrastiveLearningModel()
+    evaluate_model(contrastive_model)
