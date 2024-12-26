@@ -15,21 +15,17 @@ This repository extends their experiments to a multi-class classification settin
 ## Results
 The framework functioned as outlined in the paper. The Chebyshev distance metric outperformed the Hamming distance metric, yielding subsets of the input space that more closely approached alpha indistinguishability based on the plots (see [results folder](results/)). With a small number of clusters, it's not clear that there is any subset of $X$ where requesting human help is meaningfully beneficial, except if you were using a ResNet (which is almost 10 years old!).
 
-![Result with 4 clusters](clustering_results/per_cluster_accuracy_and_size_num_clusters_4_metric_chebyshev.png)
-
+<img src="clustering_results/per_cluster_accuracy_and_size_num_clusters_4_metric_chebyshev.png" alt="Result with 4 clusters" width="400"/>
 
 However, we can isolate a smaller but more interesting subset of the input space by increasing the number of clusters to 10. This reveals a cluster with around 2000 examples (roughly 20% of the test set) where all models perform poorly, when compared to performance in other clusters. All but one model (Swin Transformer) is outperformed by human annotators!
 
-
-![Result with 10 clusters](clustering_results/per_cluster_accuracy_and_size_num_clusters_10_metric_chebyshev.png)
-
+<img src="clustering_results/per_cluster_accuracy_and_size_num_clusters_10_metric_chebyshev.png" alt="Result with 10 clusters" width="400"/>
 
 For all clustering plots, see [here](clustering_results/).
 
-
 I explored further by analyzing the types of errors made by each model within this cluster. The heatmap below illustrates the proportion of errors for each model, broken down by the true class. Notably, all models make more mistakes on the 'dog' and 'cat' classes than any other classes (notice the dark horizontal bands for these classes). This pattern suggests a region where inputs are difficult to distinguish, and perhaps a region where none of the models we consider are trustworthy. I'm open to suggestions on how to further explore this result!
 
-![Proportion of mistakes by model by true class](other_plots/proportion_mistakes_heatmap.png)
+<img src="other_plots/proportion_mistakes_heatmap.png" alt="Proportion of mistakes by model by true class" width="400"/>
 
 
 
