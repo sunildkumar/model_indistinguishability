@@ -111,30 +111,13 @@ def save_clustered_dataframe(
     print(f"Dataframe with cluster labels saved to {output_file}")
 
 
-def analyze_cluster_composition(clustered_file="model_eval_results_with_clusters.csv"):
-    """
-    Analyze the composition of true labels in each cluster.
-    """
-    # Load the dataframe with cluster labels
-    df = pd.read_csv(clustered_file)
-
-    # Group by cluster and count the occurrences of each true label
-    cluster_composition = df.groupby("Cluster Label")["True label"].value_counts()
-
-    # Print the composition of each cluster
-    for cluster, composition in cluster_composition.groupby(level=0):
-        print(f"Cluster {cluster}:")
-        print(composition)
-        print()
-
-
 def plot_per_cluster_accuracy(
     clustered_file="model_eval_results_with_clusters.csv",
     human_file="cifar10h-raw.csv",
     metric="chebyshev",
 ):
     """
-    Plot the accuracy of each model in each cluster and the size of each cluster.
+    Plot the accuracy of each model and humans in each cluster and the size of each cluster.
     """
     df = pd.read_csv(clustered_file)
     human_df = pd.read_csv(human_file)
