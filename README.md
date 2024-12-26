@@ -27,9 +27,7 @@ However, we can isolate a smaller but more interesting subset of the input space
 For all clustering plots, see [here](clustering_results/).
 
 
-I explored further by analyzing the types of errors made by each model within this cluster. The heatmap below illustrates the proportion of errors for each model, broken down by the true class. Notably, all models make more mistakes on the 'dog' and 'cat' classes than any other classes (notice the dark horizontal bands for these classes). This pattern suggests a region where inputs are difficult to distinguish, and perhaps a region where none of the models we consider are trustworthy.
-
-
+I explored further by analyzing the types of errors made by each model within this cluster. The heatmap below illustrates the proportion of errors for each model, broken down by the true class. Notably, all models make more mistakes on the 'dog' and 'cat' classes than any other classes (notice the dark horizontal bands for these classes). This pattern suggests a region where inputs are difficult to distinguish, and perhaps a region where none of the models we consider are trustworthy. I'm open to suggestions on how to further explore this result!
 
 ![Proportion of mistakes by model by true class](other_plots/proportion_mistakes_heatmap.png)
 
