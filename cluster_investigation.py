@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -56,10 +58,7 @@ for model, class_mistakes in mistakes.items():
         for true_class, count in class_mistakes.items()
     }
 
-# Print the proportions dictionary to verify
-print(proportions)
 
-# Example mapping of integer labels to class names
 class_names = {
     0: "Airplane",
     1: "Automobile",
@@ -82,7 +81,7 @@ proportions_df.index = proportions_df.index.map(class_names)
 # Clean up the column names by removing " Label"
 proportions_df.columns = [col.replace(" Label", "") for col in proportions_df.columns]
 
-# Plot heatmap of proportions
+# Plot heatmap showing the proportion of mistakes by model by class
 plt.figure(figsize=(10, 8))
 sns.heatmap(
     proportions_df,
@@ -94,5 +93,7 @@ sns.heatmap(
 plt.title("Proportion of Mistakes by True Class and Model")
 plt.xlabel("Model")
 plt.ylabel("True Class")
-plt.savefig("proportion_mistakes_heatmap.png")
+if not os.path.exists("other_plots"):
+    os.makedirs("other_plots", exist_ok=True)
+plt.savefig("other_plots/proportion_mistakes_heatmap.png")
 plt.close()

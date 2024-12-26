@@ -119,6 +119,10 @@ def plot_per_cluster_accuracy(
     """
     Plot the accuracy of each model and humans in each cluster and the size of each cluster.
     """
+    # Ensure the directory exists
+    output_dir = "clustering_results"
+    os.makedirs(output_dir, exist_ok=True)
+
     df = pd.read_csv(clustered_file)
     human_df = pd.read_csv(human_file)
     cluster_indices = sorted(df["Cluster Label"].unique())
@@ -181,7 +185,10 @@ def plot_per_cluster_accuracy(
 
     plt.tight_layout()
     plt.savefig(
-        f"per_cluster_accuracy_and_size_num_clusters_{len(cluster_indices)}_metric_{metric}.png"
+        os.path.join(
+            output_dir,
+            f"per_cluster_accuracy_and_size_num_clusters_{len(cluster_indices)}_metric_{metric}.png",
+        )
     )
     plt.close()
 

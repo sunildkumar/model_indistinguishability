@@ -10,21 +10,28 @@ This repository extends their experiments to a multi-class classification settin
 1. Set up the environment and download the relevant data.
 2. Infers with each model in the model zoo on the CIFAR-10 test set and saves the predictions. The vector of predictions for each example is our input space $X$ for the framework. See Appendix F of the paper for more details.
 3. Clusters vectors of predictions (using KMedoids) to find approximate alpha indistinguishable subsets.
-4. Examines model and human performance within each cluster. I try the Chebyshev distance metric proposed in the paper, in addition to Hamming distance, which I thought might be a better fit for the multi-class setting, but didn't yield any meaningful results.
-
+4. Examines model and human performance within each cluster. I try the Chebyshev distance metric proposed in the paper, in addition to Hamming distance, which I thought might be a better fit for the multi-class setting, but didn't yield any meaningful results. Identifies a cluster of examples where all models perform poorly, when compared to performance in other clusters.
+5. Explores the types of mistakes made by each model within this cluster and finds a region where models have difficulty distinguishing between the "dog" and "cat" classes.
 ## Results
 The framework functioned as outlined in the paper. The Chebyshev distance metric outperformed the Hamming distance metric, yielding subsets of the input space that more closely approached alpha indistinguishability based on the plots (see [results folder](results/)). With a small number of clusters, it's not clear that there is any subset of $X$ where requesting human help is meaningfully beneficial, except if you were using a ResNet (which is almost 10 years old!).
 
-![Result with 4 clusters](TODO)
+![Result with 4 clusters](clustering_results/per_cluster_accuracy_and_size_num_clusters_4_metric_chebyshev.png)
 
 
 However, we can isolate a smaller but more interesting subset of the input space by increasing the number of clusters to 10. This reveals a cluster with around 2000 examples (roughly 20% of the test set) where all models perform poorly, when compared to performance in other clusters. All but one model (Swin Transformer) is outperformed by human annotators!
 
 
-![Result with 10 clusters](TODO)
+![Result with 10 clusters](clustering_results/per_cluster_accuracy_and_size_num_clusters_10_metric_chebyshev.png)
 
 
-For all plots, see [here](clustering_results/).
+For all clustering plots, see [here](clustering_results/).
+
+
+I explored further by analyzing the types of errors made by each model within this cluster. The heatmap below illustrates the proportion of errors for each model, broken down by the true class. Notably, all models make more mistakes on the 'dog' and 'cat' classes than any other classes (notice the dark horizontal bands for these classes). This pattern suggests a region where inputs are difficult to distinguish, and perhaps a region where none of the models we consider are trustworthy.
+
+
+
+![Proportion of mistakes by model by true class](other_plots/proportion_mistakes_heatmap.png)
 
 
 
