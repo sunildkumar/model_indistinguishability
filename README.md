@@ -24,7 +24,10 @@ However, we can isolate a smaller but more interesting subset of the input space
 ![Result with 10 clusters](TODO)
 
 
-For all plots, refer to the [clustering results folder](clustering_results/).
+For all plots, see [here](clustering_results/).
+
+
+
 
 
 

@@ -173,5 +173,9 @@ cython_debug/
 
 # repo specific things to ignore
 data/
+cifar10h-raw.csv
 dist_matrix_chebyshev.npy
-dist_matrix_chebyshev.npy
+dist_matrix_hamming.npy
+model_eval_results.csv
+model_eval_results_with_clusters.csv
+
