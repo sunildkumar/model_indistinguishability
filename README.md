@@ -1,4 +1,4 @@
-# Indistinguishable Insights 
+# Model Indistinguishability
 
 This project extends the work presented in the paper ["Human Expertise in Algorithmic Prediction"](https://arxiv.org/abs/2402.00793). The paper discusses how algorithms, such as deep models trained via empirical risk minimization, have generally outperformed human experts in various domains. It proposes a framework for identifying regions within the input space where human experts are more likely to outperform the model and when an algorithm should "ask" a human expert to help. They demonstrate this framework on a medical binary classification task with expert human annotators (doctors) in their experiments. This project explores this framework in a multi-class classification setting with less reliable human annotators (mechanical turkers).
 
