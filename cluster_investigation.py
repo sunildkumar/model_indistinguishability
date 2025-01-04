@@ -138,7 +138,7 @@ grid_size = int(np.ceil(np.sqrt(n_images)))
 
 # Create subplot grid
 fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
-fig.suptitle("Images with 0% Accuracy Across All Models", fontsize=24)
+fig.suptitle("Images with 0% Accuracy Across All Models", fontsize=36)
 
 # Flatten axes for easier iteration
 axes_flat = axes.flatten()
@@ -147,7 +147,7 @@ axes_flat = axes.flatten()
 for idx, (img, label) in enumerate(zip(images, true_label_names)):
     ax = axes_flat[idx]
     ax.imshow(img)
-    ax.set_title(label, fontsize=14, pad=8, y=-0.15)  # Increased fontsize from 10 to 14
+    ax.set_title(label, fontsize=24, pad=8, y=-0.15)
     ax.axis("off")
 
 # Hide empty subplots
