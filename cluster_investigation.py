@@ -1,8 +1,10 @@
 import os
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
+from PIL import Image
 
 from cluster import (
     cluster_with_kmedoids,
@@ -96,4 +98,62 @@ plt.ylabel("True Class")
 if not os.path.exists("other_plots"):
     os.makedirs("other_plots", exist_ok=True)
 plt.savefig("other_plots/proportion_mistakes_heatmap.png")
+plt.close()
+
+# Calculate accuracy for each example
+cluster_0_df["Correct Predictions"] = cluster_0_df.apply(
+    lambda row: sum(row[model] == row["True label"] for model in model_columns), axis=1
+)
+
+cluster_0_df["Accuracy"] = cluster_0_df["Correct Predictions"] / len(model_columns)
+
+# Sort by accuracy to see the most challenging examples
+sorted_results = cluster_0_df.sort_values("Accuracy")[
+    ["filename", "True label", "Accuracy"] + model_columns
+]
+
+print("\nAccuracy Statistics:")
+print(f"Mean accuracy: {cluster_0_df['Accuracy'].mean():.3f}")
+print(f"Median accuracy: {cluster_0_df['Accuracy'].median():.3f}")
+print("\nMost challenging examples (lowest accuracy):")
+print(sorted_results.head())
+
+# select those with 0.0 accuracy
+zero_acc_rows = sorted_results[(sorted_results["Accuracy"] == 0.0)]
+
+# make a grid of images where no model predicts the correct class
+fnames = zero_acc_rows["filename"].tolist()
+true_labels = zero_acc_rows["True label"].tolist()
+true_label_names = zero_acc_rows["True label"].map(class_names).tolist()
+
+# Sort images by true label
+sorted_indices = sorted(range(len(true_labels)), key=lambda k: true_labels[k])
+fnames = [fnames[i] for i in sorted_indices]
+true_label_names = [true_label_names[i] for i in sorted_indices]
+images = [Image.open(f"data/cifar-10-test/{fname}") for fname in fnames]
+
+# Calculate grid dimensions
+n_images = len(images)
+grid_size = int(np.ceil(np.sqrt(n_images)))
+
+# Create subplot grid
+fig, axes = plt.subplots(grid_size, grid_size, figsize=(15, 15))
+fig.suptitle("Images with 0% Accuracy Across All Models", fontsize=16)
+
+# Flatten axes for easier iteration
+axes_flat = axes.flatten()
+
+# Plot each image
+for idx, (img, label) in enumerate(zip(images, true_label_names)):
+    ax = axes_flat[idx]
+    ax.imshow(img)
+    ax.set_title(label, fontsize=10, pad=8, y=-0.15)  # Move title below image
+    ax.axis("off")
+
+# Hide empty subplots
+for idx in range(len(images), len(axes_flat)):
+    axes_flat[idx].axis("off")
+
+plt.tight_layout()
+plt.savefig("other_plots/challenging_examples_grid.png", dpi=300, bbox_inches="tight")
 plt.close()
