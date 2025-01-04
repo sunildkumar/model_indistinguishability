@@ -34,7 +34,7 @@ I explored further by analyzing the types of errors made by each model within th
 </div>
 
 
-From this cluster, here are examples that none of the models predict correctly. The grid below shows the images and their true labels. Some of these ground truth labels are incorrect, e.g. the dog in row 2 that is labeled as a cat. Other images are very hard to distinguish, for example the airplane in the top left corner.
+From this cluster, here are the 16 examples that none of the models predict correctly. The grid below shows the images and their true labels. Some of these ground truth labels are incorrect, e.g. the dog in row 2 column 4 that is labeled as a cat. Other images seem pretty unambiguous to me, like the cat in row 2 column 2. 
 
 <div style="text-align: center;">
     <img src="other_plots/challenging_examples_grid.png" alt="Challenging examples" width="600"/>

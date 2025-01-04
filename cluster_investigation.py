@@ -112,10 +112,12 @@ sorted_results = cluster_0_df.sort_values("Accuracy")[
     ["filename", "True label", "Accuracy"] + model_columns
 ]
 
+
 print("\nAccuracy Statistics:")
 print(f"Mean accuracy: {cluster_0_df['Accuracy'].mean():.3f}")
 print(f"Median accuracy: {cluster_0_df['Accuracy'].median():.3f}")
 print("\nMost challenging examples (lowest accuracy):")
+print("total rows in cluster 0: ", len(cluster_0_df))
 print(sorted_results.head())
 
 # select those with 0.0 accuracy
